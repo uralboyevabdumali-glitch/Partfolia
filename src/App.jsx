@@ -267,7 +267,7 @@ function PortfolioContent() {
               </div>
             </div>
             <span className="font-bold text-xl tracking-wider text-white">
-              Abdumalik<span className="text-cyan-400">.uz</span>
+              uralbayev<span className="text-cyan-400">.uz</span>
             </span>
           </a>
 
