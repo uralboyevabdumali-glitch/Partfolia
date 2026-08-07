@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Abdumalik from "../src/assets/abdumalik.png";
 import {
   FaHtml5,
   FaCss3Alt,
@@ -15,8 +15,9 @@ import {
   FaEnvelope,
   FaPhoneAlt,
   FaMapMarkerAlt,
-  FaDownload,
   FaArrowRight,
+  FaArrowUp,
+  FaDownload,
   FaExternalLinkAlt,
   FaBars,
   FaTimes,
@@ -24,739 +25,737 @@ import {
   FaMobileAlt,
   FaPlug,
   FaTachometerAlt,
-  FaLaptopCode,
+  FaLayerGroup,
+  FaCheckCircle,
   FaPaperPlane,
 } from "react-icons/fa";
 import { SiTailwindcss, SiExpress } from "react-icons/si";
 
-/* ------------------------------------------------------------------ */
-/*  DATA                                                               */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   DATA
+   ========================================================================= */
 
 const NAV_LINKS = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Services", href: "#services" },
-  { label: "Projects", href: "#projects" },
-  { label: "Experience", href: "#experience" },
-  { label: "Contact", href: "#contact" },
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "services", label: "Services" },
+  { id: "projects", label: "Projects" },
+  { id: "experience", label: "Experience" },
+  { id: "contact", label: "Contact" },
 ];
 
-const ROLES = ["Frontend Developer", "React.js Engineer", "UI Craftsman", "Cyber UI Designer"];
+const TYPED_ROLES = [
+  "Frontend Developer",
+  "React Developer",
+  "UI/UX Enthusiast",
+  "Problem Solver",
+];
 
-const ABOUT_STATS = [
-  { label: "Years of Experience", value: "1.5+", icon: FaLaptopCode },
-  { label: "Based In", value: "Tashkent, UZ", icon: FaMapMarkerAlt },
-  { label: "Daily Coding", value: "4–6 Hours", icon: FaCode },
-  { label: "Future Goal", value: "Full Stack Dev", icon: FaArrowRight },
+const ABOUT_CARDS = [
+  { icon: <FaLayerGroup />, title: "1.5 Years", subtitle: "Hands-on Experience" },
+  { icon: <FaMapMarkerAlt />, title: "Tashkent, Uzbekistan", subtitle: "Based & Remote-Friendly" },
+  { icon: <FaCode />, title: "4–6 Hours", subtitle: "Daily Coding Practice" },
+  { icon: <FaArrowRight />, title: "Full Stack", subtitle: "Future Career Goal" },
 ];
 
 const SKILLS = [
-  { name: "HTML5", icon: FaHtml5, color: "#E34F26" },
-  { name: "CSS3", icon: FaCss3Alt, color: "#2965F1" },
-  { name: "JavaScript", icon: FaJs, color: "#F7DF1E" },
-  { name: "React", icon: FaReact, color: "#61DAFB" },
-  { name: "Tailwind CSS", icon: SiTailwindcss, color: "#38BDF8" },
-  { name: "Node.js", icon: FaNodeJs, color: "#5FA04E" },
-  { name: "Express.js", icon: SiExpress, color: "#E9EDF2" },
-  { name: "Git", icon: FaGitAlt, color: "#F05032" },
+  { name: "HTML", icon: <FaHtml5 />, level: 95 },
+  { name: "CSS", icon: <FaCss3Alt />, level: 92 },
+  { name: "JavaScript", icon: <FaJs />, level: 88 },
+  { name: "React", icon: <FaReact />, level: 90 },
+  { name: "Tailwind CSS", icon: <SiTailwindcss />, level: 93 },
+  { name: "Node.js", icon: <FaNodeJs />, level: 78 },
+  { name: "Express.js", icon: <SiExpress />, level: 74 },
+  { name: "Git", icon: <FaGitAlt />, level: 85 },
 ];
 
 const SERVICES = [
-  {
-    icon: FaLaptopCode,
-    title: "Frontend Development",
-    desc: "Building fast, scalable and maintainable user interfaces with clean component architecture and modern best practices.",
-  },
-  {
-    icon: FaReact,
-    title: "React Development",
-    desc: "Crafting dynamic single-page applications with React — reusable components, hooks, and efficient state management.",
-  },
-  {
-    icon: FaMobileAlt,
-    title: "Responsive Design",
-    desc: "Designing pixel-perfect layouts that adapt beautifully across desktop, tablet and mobile devices.",
-  },
-  {
-    icon: FaPlug,
-    title: "API Integration",
-    desc: "Connecting frontend applications to REST APIs and third-party services with clean, reliable data handling.",
-  },
-  {
-    icon: FaTachometerAlt,
-    title: "Performance Optimization",
-    desc: "Improving load speed, rendering performance and Core Web Vitals for a smoother user experience.",
-  },
+  { icon: <FaCode />, title: "Frontend Development", desc: "Building fast, clean and maintainable interfaces with modern JavaScript and component-driven architecture." },
+  { icon: <FaReact />, title: "React Development", desc: "Developing scalable single-page applications with React, custom hooks and clean state management." },
+  { icon: <FaMobileAlt />, title: "Responsive Design", desc: "Designing layouts that look and feel premium on every screen, from mobile to large desktop displays." },
+  { icon: <FaPlug />, title: "API Integration", desc: "Connecting frontend applications to REST APIs with proper loading, error and empty states." },
+  { icon: <FaTachometerAlt />, title: "Performance Optimization", desc: "Improving load times and rendering performance through code-splitting, lazy loading and best practices." },
 ];
 
 const PROJECTS = [
   {
-    title: "NovaCart — E-Commerce Platform",
-    desc: "A full-featured online store with product filtering, cart management, and a secure checkout flow built for speed.",
-    stack: ["React", "Redux Toolkit", "Tailwind CSS", "Node.js", "MongoDB"],
-    gradient: "from-indigo-500 via-violet-500 to-fuchsia-500",
-    github: "https://github.com/uralboyevabdumali/novacart",
-    demo: "https://novacart-demo.vercel.app",
+    title: "Luxe Commerce UI",
+    desc: "A premium e-commerce storefront concept with animated product grids, cart drawer and checkout flow.",
+    tech: ["React", "Tailwind CSS", "Framer Motion"],
+    img: "https://www.craveasia.com/assets_hw/images/works/esteelauder-master.jpg",
+    tag: "E-Commerce",
   },
   {
-    title: "FlowBoard — Kanban Task Manager",
-    desc: "A drag-and-drop task management app with real-time boards, labels and deadlines for teams and freelancers.",
-    stack: ["React", "Tailwind CSS", "Firebase", "Framer Motion"],
-    gradient: "from-cyan-500 via-teal-500 to-emerald-500",
-    github: "https://github.com/uralboyevabdumali/flowboard",
-    demo: "https://flowboard-demo.vercel.app",
+    title: "Skyline Weather",
+    desc: "A minimalist weather dashboard that pulls live forecasts and visualizes them with smooth transitions.",
+    tech: ["React", "REST API", "Tailwind CSS"],
+    img: "https://images.unsplash.com/photo-1592210454359-9043f067919b?w=800&h=550&fit=crop",
+    tag: "Web App",
   },
   {
-    title: "HomeNest — Real Estate Listings",
-    desc: "A property listing platform with advanced search, map view and agent dashboards for managing listings.",
-    stack: ["React", "Node.js", "Express.js", "MongoDB", "Tailwind CSS"],
-    gradient: "from-amber-500 via-orange-500 to-rose-500",
-    github: "https://github.com/uralboyevabdumali/homenest",
-    demo: "https://homenest-demo.vercel.app",
+    title: "Flow Task Manager",
+    desc: "A drag-and-drop task board for teams, with boards, labels and local persistence.",
+    tech: ["React", "JavaScript", "Context API"],
+    img: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=550&fit=crop",
+    tag: "Productivity",
   },
   {
-    title: "SkyCast — Weather Forecast App",
-    desc: "A clean weather dashboard with live forecasts, hourly charts and location search powered by a public API.",
-    stack: ["React", "OpenWeather API", "Chart.js", "Tailwind CSS"],
-    gradient: "from-sky-500 via-blue-500 to-indigo-500",
-    github: "https://github.com/uralboyevabdumali/skycast",
-    demo: "https://skycast-demo.vercel.app",
+    title: "Pulse Admin Dashboard",
+    desc: "An analytics dashboard with animated charts, tables and a responsive sidebar navigation system.",
+    tech: ["React", "Tailwind CSS", "Chart.js"],
+    img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=550&fit=crop",
+    tag: "Dashboard",
   },
   {
-    title: "CoinPulse — Crypto Price Tracker",
-    desc: "A real-time cryptocurrency tracker with animated price cards, sparkline charts and watchlist support.",
-    stack: ["React", "CoinGecko API", "Framer Motion", "Tailwind CSS"],
-    gradient: "from-emerald-500 via-lime-500 to-yellow-500",
-    github: "https://github.com/uralboyevabdumali/coinpulse",
-    demo: "https://coinpulse-demo.vercel.app",
+    title: "Savory Recipe Finder",
+    desc: "A recipe discovery app with search, filters and saved favorites backed by a public food API.",
+    tech: ["React", "REST API", "CSS"],
+    img: "https://images.unsplash.com/photo-1466637574441-749b8f6b7d4e?w=800&h=550&fit=crop",
+    tag: "Web App",
   },
   {
-    title: "Aurora CMS — Portfolio Dashboard",
-    desc: "A lightweight admin dashboard for managing portfolio content, projects and messages with secure auth.",
-    stack: ["React", "Node.js", "Express.js", "JWT", "Tailwind CSS"],
-    gradient: "from-fuchsia-500 via-purple-500 to-indigo-500",
-    github: "https://github.com/uralboyevabdumali/aurora-cms",
-    demo: "https://aurora-cms-demo.vercel.app",
+    title: "Studio Portfolio Kit",
+    desc: "A reusable portfolio template system for developers, with theme tokens and animated sections.",
+    tech: ["React", "Tailwind CSS", "Framer Motion"],
+    img: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=550&fit=crop",
+    tag: "Template",
   },
 ];
 
 const EXPERIENCE = [
-  {
-    role: "Freelance Frontend Developer",
-    company: "Self-Employed · Remote",
-    period: "2024 — Present",
-    desc: "Designing and building responsive web applications for clients using React and Tailwind CSS, from landing pages to full product dashboards.",
-  },
-  {
-    role: "Junior Frontend Developer",
-    company: "Local Web Studio · Tashkent",
-    period: "2023 — 2024",
-    desc: "Developed and maintained UI components, integrated REST APIs, and collaborated with designers to ship pixel-accurate interfaces.",
-  },
-  {
-    role: "Frontend Development — Intensive Training",
-    company: "Self-Taught · Online",
-    period: "2023",
-    desc: "Mastered HTML, CSS, JavaScript and React fundamentals through daily practice, building dozens of small projects along the way.",
-  },
+  { year: "2024 — Present", role: "Freelance Frontend Developer", place: "Self-employed · Remote", desc: "Building responsive websites and web applications for clients using React, JavaScript and Tailwind CSS." },
+  { year: "2023 — 2024", role: "Frontend Development Bootcamp", place: "Intensive Practical Training", desc: "Completed deep, project-based training in HTML, CSS, JavaScript and React fundamentals." },
+  { year: "2023", role: "Started Web Development Journey", place: "Self-Taught Foundations", desc: "Began learning web development from scratch, building small projects daily to sharpen core skills." },
 ];
 
-const SOCIALS = [
-  { icon: FaGithub, href: "https://github.com/uralboyevabdumali", label: "GitHub" },
-  { icon: FaTelegramPlane, href: "https://t.me/Abdumalik_Uralboyev", label: "Telegram" },
-  { icon: FaEnvelope, href: "mailto:uralboyevabdumali@gmail.com", label: "Email" },
+const CONTACT_INFO = [
+  { icon: <FaEnvelope />, label: "Email", value: "uralboyevabdumali@gmail.com", href: "mailto:uralboyevabdumali@gmail.com" },
+  { icon: <FaPhoneAlt />, label: "Phone", value: "+998 94 527 13 80", href: "tel:+998945271380" },
+  { icon: <FaMapMarkerAlt />, label: "Location", value: "Tashkent, Uzbekistan", href: null },
 ];
 
-/* ------------------------------------------------------------------ */
-/*  SHARED UI PRIMITIVES                                               */
-/* ------------------------------------------------------------------ */
+const SOCIAL_LINKS = [
+  { icon: <FaGithub />, href: "https://github.com/uralboyevabdumali", label: "GitHub" },
+  { icon: <FaTelegramPlane />, href: "https://t.me/Abdumalik_Uralboyev", label: "Telegram" },
+  { icon: <FaEnvelope />, href: "mailto:uralboyevabdumali@gmail.com", label: "Email" },
+];
 
-const SectionHeading = ({ eyebrow, title, subtitle }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.4 }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
-    className="mb-14 text-center"
-  >
-    <span className="inline-block text-xs sm:text-sm font-semibold tracking-[0.3em] uppercase text-cyan-400 mb-3">
-      {eyebrow}
-    </span>
-    <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-      {title}
-    </h2>
-    {subtitle && (
-      <p className="mt-4 max-w-2xl mx-auto text-slate-400 text-base sm:text-lg leading-relaxed">
-        {subtitle}
-      </p>
-    )}
-  </motion.div>
-);
+/* =========================================================================
+   SMALL REUSABLE PIECES
+   ========================================================================= */
 
-const GradientBlobs = () => (
-  <div className="pointer-events-none absolute inset-0 overflow-hidden">
-    <div className="blob-anim absolute -top-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-indigo-600/30 blur-[110px]" />
-    <div className="blob-anim-delay absolute top-1/3 -right-40 w-[32rem] h-[32rem] rounded-full bg-cyan-500/20 blur-[120px]" />
-    <div className="blob-anim-slow absolute bottom-0 left-1/4 w-[26rem] h-[26rem] rounded-full bg-fuchsia-600/20 blur-[110px]" />
-  </div>
-);
+const fadeUp = {
+  hidden: { opacity: 0, y: 32, filter: "blur(6px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7, ease: [0.16, 0.8, 0.24, 1] } },
+};
 
-/* ------------------------------------------------------------------ */
-/*  NAVBAR                                                             */
-/* ------------------------------------------------------------------ */
+const staggerParent = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
 
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
+function Reveal({ children, className = "", variants = fadeUp, ...props }) {
   return (
-    <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled ? "py-3" : "py-5"
-      }`}
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={variants}
+      {...props}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div
-          className={`flex items-center justify-between rounded-2xl px-5 py-3 transition-all duration-500 ${
-            scrolled
-              ? "bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
-              : "bg-transparent border border-transparent"
-          }`}
-        >
-          <a href="#home" className="font-display text-xl font-bold tracking-tight text-white">
-            AU<span className="text-gradient">.dev</span>
-          </a>
-
-          <nav className="hidden lg:flex items-center gap-8">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-gradient-to-r from-indigo-400 to-cyan-400 transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-          </nav>
-
-          <div className="hidden lg:flex">
-            <a
-              href="#contact"
-              className="btn-glow inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white"
-            >
-              Let's Talk <FaArrowRight className="text-xs" />
-            </a>
-          </div>
-
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="lg:hidden text-white text-xl p-2"
-            aria-label="Toggle menu"
-          >
-            {open ? <FaTimes /> : <FaBars />}
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="lg:hidden overflow-hidden mt-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10"
-            >
-              <div className="flex flex-col p-4 gap-1">
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="px-4 py-3 rounded-xl text-slate-200 hover:bg-white/5 hover:text-white text-sm font-medium transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-                <a
-                  href="#contact"
-                  onClick={() => setOpen(false)}
-                  className="mt-2 btn-glow text-center rounded-xl px-4 py-3 text-sm font-semibold text-white"
-                >
-                  Let's Talk
-                </a>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </header>
+      {children}
+    </motion.div>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  HERO                                                               */
-/* ------------------------------------------------------------------ */
+function Eyebrow({ children }) {
+  return (
+    <span className="inline-flex items-center gap-2.5 text-[12px] font-semibold tracking-[0.22em] uppercase text-primary mb-4">
+      <span className="w-5 h-px bg-primary" />
+      {children}
+    </span>
+  );
+}
 
-function Hero() {
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [typing, setTyping] = useState(true);
+function GradientBlobs({ className = "" }) {
+  return (
+    <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
+      <div className="absolute -top-32 -left-32 w-[420px] h-[420px] rounded-full bg-primary/25 blur-[110px] animate-blob" />
+      <div className="absolute -bottom-24 -right-24 w-[440px] h-[440px] rounded-full bg-secondary/25 blur-[110px] animate-blob [animation-delay:3s]" />
+    </div>
+  );
+}
+
+function useTypingEffect(words, typingSpeed = 90, deletingSpeed = 45, pause = 1400) {
+  const [text, setText] = useState("");
+  const [wordIndex, setWordIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const current = ROLES[roleIndex];
+    const current = words[wordIndex % words.length];
     let timeout;
 
-    if (typing) {
-      if (displayText.length < current.length) {
-        timeout = setTimeout(() => setDisplayText(current.slice(0, displayText.length + 1)), 70);
-      } else {
-        timeout = setTimeout(() => setTyping(false), 1400);
-      }
+    if (!deleting && text === current) {
+      timeout = setTimeout(() => setDeleting(true), pause);
+    } else if (deleting && text === "") {
+      setDeleting(false);
+      setWordIndex((i) => (i + 1) % words.length);
     } else {
-      if (displayText.length > 0) {
-        timeout = setTimeout(() => setDisplayText(displayText.slice(0, -1)), 35);
-      } else {
-        setTyping(true);
-        setRoleIndex((i) => (i + 1) % ROLES.length);
-      }
+      timeout = setTimeout(() => {
+        setText((t) => (deleting ? current.slice(0, t.length - 1) : current.slice(0, t.length + 1)));
+      }, deleting ? deletingSpeed : typingSpeed);
     }
+
     return () => clearTimeout(timeout);
-  }, [displayText, typing, roleIndex]);
+  }, [text, deleting, wordIndex, words, typingSpeed, deletingSpeed, pause]);
+
+  return text;
+}
+
+/* =========================================================================
+   MAIN APP
+   ========================================================================= */
+
+export default function App() {
+  return (
+    <div className="relative bg-bg text-ink font-body min-h-screen selection:bg-primary selection:text-bg">
+      <div className="noise" />
+      <ScrollProgressBar />
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main>
+              <Hero />
+              <About />
+              <Skills />
+              <Services />
+              <Projects />
+              <Experience />
+              <Contact />
+            </main>
+          }
+        />
+      </Routes>
+      <Footer />
+      <BackToTop />
+      <ToastContainer
+        position="bottom-right"
+        theme="dark"
+        toastStyle={{ background: "#171717", color: "#E7E5DF", border: "1px solid rgba(231,229,223,0.08)" }}
+      />
+    </div>
+  );
+}
+
+/* =========================================================================
+   SCROLL PROGRESS BAR
+   ========================================================================= */
+
+function ScrollProgressBar() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  return (
+    <motion.div
+      style={{ scaleX }}
+      className="fixed top-0 left-0 right-0 h-[2px] origin-left bg-gradient-to-r from-primary to-secondary z-[300]"
+    />
+  );
+}
+
+/* =========================================================================
+   NAVBAR
+   ========================================================================= */
+
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
+      let current = "home";
+      NAV_LINKS.forEach((l) => {
+        const el = document.getElementById(l.id);
+        if (el && window.scrollY + 180 >= el.offsetTop) current = l.id;
+      });
+      setActive(current);
+    };
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
-      <GradientBlobs />
-      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-16 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+    <>
+      <motion.nav
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.16, 0.8, 0.24, 1] }}
+        className={`fixed left-1/2 -translate-x-1/2 z-[200] w-[min(94%,900px)] flex items-center justify-between gap-4 rounded-full glass px-4 py-3 transition-all duration-500 ${
+          scrolled ? "top-3 shadow-glowSoft" : "top-5"
+        }`}
+      >
+        <button onClick={() => scrollTo("home")} className="font-display text-lg font-semibold pl-2 tracking-tight">
+          Abdumalik<span className="text-primary">.</span>
+        </button>
+
+        <div className="hidden md:flex items-center gap-1">
+          {NAV_LINKS.map((l) => (
+            <button
+              key={l.id}
+              onClick={() => scrollTo(l.id)}
+              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors duration-300 ${
+                active === l.id ? "text-bg" : "text-ink/60 hover:text-ink"
+              }`}
+            >
+              {active === l.id && (
+                <motion.span
+                  layoutId="nav-pill"
+                  className="absolute inset-0 rounded-full bg-primary -z-10"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                />
+              )}
+              {l.label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scrollTo("contact")}
+          className="hidden md:inline-flex items-center gap-2 bg-primary text-bg text-[13.5px] font-semibold px-5 py-2.5 rounded-full transition-transform duration-300 hover:scale-[1.04] hover:shadow-glow"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-cyan-300 mb-6 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Available for new projects
-          </span>
+          Let's talk <FaArrowRight size={12} />
+        </button>
 
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] text-white">
-            Hi, I'm <span className="text-gradient">Abdumalik Uralboyev</span>
-          </h1>
+        <button
+          className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-card"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+      </motion.nav>
 
-          <div className="mt-4 h-10 flex items-center">
-            <span className="font-display text-xl sm:text-2xl font-semibold text-slate-200">
-              {displayText}
-              <span className="inline-block w-[2px] h-6 bg-cyan-400 ml-1 align-middle animate-pulse" />
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-[199] w-[90%] glass rounded-3xl p-3 md:hidden"
+          >
+            {NAV_LINKS.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => scrollTo(l.id)}
+                className={`w-full text-left px-5 py-3 rounded-2xl text-sm font-medium transition-colors ${
+                  active === l.id ? "bg-primary text-bg" : "text-ink/70 hover:bg-white/5"
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/* =========================================================================
+   HERO
+   ========================================================================= */
+
+function Hero() {
+  const typed = useTypingEffect(TYPED_ROLES);
+
+  return (
+    <section id="home" className="relative min-h-screen flex items-center pt-36 overflow-hidden">
+      <GradientBlobs />
+      <div className="container mx-auto max-w-6xl px-6 relative z-10 grid md:grid-cols-[1.1fr_0.9fr] gap-14 items-center">
+        <motion.div initial="hidden" animate="show" variants={staggerParent}>
+          <motion.p variants={fadeUp} className="text-primary font-semibold tracking-[0.2em] uppercase text-xs mb-5">
+            Hello, I'm
+          </motion.p>
+
+          <motion.h1 variants={fadeUp} className="font-display font-semibold text-[42px] sm:text-6xl lg:text-7xl leading-[1.03] mb-5">
+            Abdumalik <span className="gradient-text">Uralboyev</span>
+          </motion.h1>
+
+          <motion.div variants={fadeUp} className="h-9 mb-6">
+            <span className="text-xl sm:text-2xl font-medium text-ink/85">
+              {typed}
+              <span className="inline-block w-[2px] h-6 bg-primary ml-1 align-middle animate-pulse" />
             </span>
-          </div>
+          </motion.div>
 
-          <p className="mt-6 text-lg sm:text-xl font-medium text-slate-300 max-w-xl">
+          <motion.p variants={fadeUp} className="text-ink/60 text-[15.5px] sm:text-base max-w-xl mb-3 font-medium">
             Crafting Modern Web Experiences &amp; Cyber UI Designs
-          </p>
+          </motion.p>
 
-          <p className="mt-5 text-slate-400 leading-relaxed max-w-xl">
+          <motion.p variants={fadeUp} className="text-ink/55 text-[15px] leading-relaxed max-w-xl mb-10">
             Salom! Men Abdumalik Uralboyev, Frontend Developer. React, JavaScript, Tailwind CSS
             va zamonaviy web texnologiyalari yordamida tez, responsive va professional web
             ilovalar yarataman.
-          </p>
+          </motion.p>
 
-          <div className="mt-9 flex flex-wrap gap-4">
-            <a href="#projects" className="btn-glow inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white">
-              View Projects <FaArrowRight className="text-xs" />
+          <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+            <a
+              href="#projects"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-2 bg-primary text-bg font-semibold text-sm px-7 py-4 rounded-full transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-glow"
+            >
+              View Projects <FaArrowRight size={13} />
             </a>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-white border border-white/15 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-2 bg-transparent border border-secondary text-ink font-semibold text-sm px-7 py-4 rounded-full transition-all duration-300 hover:bg-secondary hover:text-bg hover:-translate-y-1 hover:scale-[1.03]"
             >
               Contact Me
             </a>
             <a
               href="/Abdumalik_Uralboyev_CV.pdf"
               download
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold text-slate-300 hover:text-white border border-white/10 hover:border-white/20 transition-colors"
+              className="inline-flex items-center gap-2 bg-white/5 border border-line text-ink font-semibold text-sm px-7 py-4 rounded-full transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:-translate-y-1"
             >
-              <FaDownload className="text-xs" /> Download CV
+              Download CV <FaDownload size={13} />
             </a>
-          </div>
-
-          <div className="mt-10 flex items-center gap-5">
-            {SOCIALS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={s.label}
-                className="w-11 h-11 flex items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-400/10 transition-all"
-              >
-                <s.icon />
-              </a>
-            ))}
-          </div>
+          </motion.div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
-          className="relative hidden lg:flex justify-center"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.16, 0.8, 0.24, 1], delay: 0.2 }}
+          className="relative mx-auto w-full max-w-sm"
         >
-          <div className="relative w-[26rem] h-[26rem]">
-            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-indigo-500/20 via-cyan-400/10 to-fuchsia-500/20 blur-2xl" />
-            <div className="glass-panel relative w-full h-full rounded-[2.5rem] p-8 flex flex-col justify-between glow-border">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-rose-400/80" />
-                  <span className="w-3 h-3 rounded-full bg-amber-300/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-400/80" />
-                </div>
-                <span className="text-[11px] font-mono text-slate-400">status.tsx</span>
+          <div className="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-primary/25 to-secondary/25 blur-2xl animate-float" />
+          <div className="relative aspect-[4/5] rounded-[32px] glass overflow-hidden shadow-glowSoft border border-line">
+            <img
+              src={Abdumalik}
+              alt="Abdumalik Uralboyev"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute bottom-4 left-4 right-4 glass rounded-2xl px-4 py-3 flex items-center justify-between">
+              <div>
+                <p className="text-[11px] text-ink/50 uppercase tracking-wide">Available for</p>
+                <p className="text-sm font-semibold">Freelance Projects</p>
               </div>
-
-              <div className="space-y-3 font-mono text-sm">
-                <p className="text-slate-500">// developer profile</p>
-                <p className="text-slate-300">
-                  <span className="text-fuchsia-400">const</span> dev = &#123;
-                </p>
-                <p className="text-slate-300 pl-4">
-                  name: <span className="text-cyan-300">"Abdumalik"</span>,
-                </p>
-                <p className="text-slate-300 pl-4">
-                  role: <span className="text-cyan-300">"Frontend Dev"</span>,
-                </p>
-                <p className="text-slate-300 pl-4">
-                  stack: <span className="text-emerald-300">["React","Tailwind","Node"]</span>,
-                </p>
-                <p className="text-slate-300 pl-4">
-                  location: <span className="text-cyan-300">"Tashkent, UZ"</span>,
-                </p>
-                <p className="text-slate-300">&#125;;</p>
-              </div>
-
-              <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/10 px-4 py-3">
-                <span className="text-xs text-slate-400">Build status</span>
-                <span className="flex items-center gap-2 text-xs font-semibold text-emerald-300">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Passing
-                </span>
-              </div>
+              <span className="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_10px_#96BB73]" />
             </div>
-
-            <motion.div
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="glass-panel absolute -top-8 -right-8 rounded-2xl px-4 py-3 flex items-center gap-3 glow-border"
-            >
-              <FaReact className="text-cyan-300 text-2xl" />
-              <div className="leading-tight">
-                <p className="text-xs text-slate-400">Experience</p>
-                <p className="text-sm font-semibold text-white">1.5 Years</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              animate={{ y: [0, 14, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="glass-panel absolute -bottom-6 -left-8 rounded-2xl px-4 py-3 flex items-center gap-3 glow-border"
-            >
-              <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white text-sm font-bold">
-                6+
-              </span>
-              <div className="leading-tight">
-                <p className="text-xs text-slate-400">Projects</p>
-                <p className="text-sm font-semibold text-white">Shipped</p>
-              </div>
-            </motion.div>
           </div>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-ink/40 text-[11px] tracking-[0.2em] uppercase"
+      >
+        Scroll
+        <span className="w-[22px] h-9 rounded-full border border-line flex justify-center pt-1.5">
+          <motion.span
+            animate={{ y: [0, 9, 0], opacity: [1, 0, 1] }}
+            transition={{ repeat: Infinity, duration: 1.8 }}
+            className="w-[3px] h-[7px] rounded-full bg-primary"
+          />
+        </span>
+      </motion.div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   ABOUT
+   ========================================================================= */
+
+function About() {
+  return (
+    <section id="about" className="relative py-32 bg-section">
+      <div className="container mx-auto max-w-6xl px-6">
+        <div className="grid md:grid-cols-[0.85fr_1.15fr] gap-16 items-center">
+          <Reveal variants={{ hidden: { opacity: 0, scale: 0.94 }, show: { opacity: 1, scale: 1, transition: { duration: 0.7 } } }}>
+            <div className="relative aspect-square rounded-[32px] glass border border-line overflow-hidden">
+              <img
+                src={Abdumalik}
+                alt="Abdumalik Uralboyev"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg/50 via-transparent to-transparent" />
+            </div>
+          </Reveal>
+
+          <div>
+            <Reveal>
+              <Eyebrow>About Me</Eyebrow>
+              <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-6 leading-tight">
+                Turning ideas into <span className="gradient-text">clean, functional</span> interfaces.
+              </h2>
+              <p className="text-ink/60 text-[15.5px] leading-relaxed max-w-xl mb-4">
+                I'm a frontend developer based in Tashkent, Uzbekistan, focused on building fast
+                and responsive web applications with React and modern JavaScript. I care about
+                writing readable code and designing interfaces that feel intentional.
+              </p>
+              <p className="text-ink/60 text-[15.5px] leading-relaxed max-w-xl mb-10">
+                Every day I dedicate 4 to 6 hours to coding — building small projects, refining my
+                fundamentals and exploring new tools. My long-term goal is to grow into a
+                confident Full Stack Developer.
+              </p>
+            </Reveal>
+
+            <div className="grid grid-cols-2 gap-4">
+              {ABOUT_CARDS.map((c, i) => (
+                <Reveal key={c.title} transition={{ delay: i * 0.08 }}>
+                  <div className="group rounded-2xl bg-card border border-line p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-glowSoft">
+                    <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-lg mb-4 transition-transform duration-300 group-hover:scale-110">
+                      {c.icon}
+                    </div>
+                    <p className="font-display font-semibold text-lg">{c.title}</p>
+                    <p className="text-ink/50 text-[13px] mt-1">{c.subtitle}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================================
+   SKILLS
+   ========================================================================= */
+
+function Skills() {
+  return (
+    <section id="skills" className="relative py-32">
+      <div className="container mx-auto max-w-6xl px-6">
+        <Reveal className="max-w-xl mb-16">
+          <Eyebrow>What I Work With</Eyebrow>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-4">Skills &amp; technologies.</h2>
+          <p className="text-ink/60 text-[15.5px]">
+            The core stack I use to design, build and ship modern web applications.
+          </p>
+        </Reveal>
+
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={staggerParent}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        >
+          {SKILLS.map((s) => (
+            <motion.div
+              key={s.name}
+              variants={fadeUp}
+              className="group relative overflow-hidden rounded-3xl bg-card border border-line p-6 transition-all duration-300 hover:-translate-y-2 hover:border-primary/40 hover:shadow-glowSoft"
+            >
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_80%_0%,rgba(191,187,90,0.18),transparent_60%)]" />
+              <div className="relative">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl mb-5 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+                  {s.icon}
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="font-semibold text-[15px]">{s.name}</p>
+                  <span className="text-xs text-ink/50 font-medium">{s.level}%</span>
+                </div>
+                <div className="h-[5px] rounded-full bg-white/5 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${s.level}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2, ease: [0.16, 0.8, 0.24, 1], delay: 0.15 }}
+                    className="h-full rounded-full bg-gradient-to-r from-secondary to-primary"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  ABOUT                                                              */
-/* ------------------------------------------------------------------ */
-
-function About() {
-  return (
-    <section id="about" className="relative py-28">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="About Me"
-          title="Turning ideas into interfaces"
-          subtitle="A closer look at who I am, how I work, and where I'm headed."
-        />
-
-        <div className="grid lg:grid-cols-5 gap-10 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-2 glass-panel rounded-3xl p-8 glow-border"
-          >
-            <h3 className="font-display text-2xl font-bold text-white mb-4">
-              Frontend developer with a passion for detail
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              I'm Abdumalik, a frontend developer based in Tashkent, Uzbekistan. Over the past
-              1.5 years I've focused on building fast, accessible and visually refined web
-              interfaces with React and Tailwind CSS. I care about the small details — spacing,
-              motion, and the way an interface feels to use, not just how it looks.
-            </p>
-            <p className="mt-4 text-slate-400 leading-relaxed">
-              I spend 4 to 6 hours coding every single day, learning new patterns and refining my
-              craft. My long-term goal is to grow into a full stack developer, combining strong
-              frontend design skills with solid backend engineering.
-            </p>
-          </motion.div>
-
-          <div className="lg:col-span-3 grid sm:grid-cols-2 gap-6">
-            {ABOUT_STATS.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                whileHover={{ y: -6 }}
-                className="glass-panel rounded-2xl p-6 glow-border card-hover"
-              >
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500/20 to-cyan-400/20 flex items-center justify-center text-cyan-300 text-lg mb-4">
-                  <stat.icon />
-                </div>
-                <p className="text-2xl font-bold text-white font-display">{stat.value}</p>
-                <p className="text-sm text-slate-400 mt-1">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  SKILLS                                                             */
-/* ------------------------------------------------------------------ */
-
-function Skills() {
-  return (
-    <section id="skills" className="relative py-28">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="Skills"
-          title="Tools I build with"
-          subtitle="A focused toolkit for building modern, performant web applications end to end."
-        />
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-          {SKILLS.map((skill, i) => (
-            <motion.div
-              key={skill.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.5, delay: i * 0.06 }}
-              whileHover={{ y: -8, scale: 1.03 }}
-              className="glass-panel rounded-2xl p-6 flex flex-col items-center text-center gap-3 glow-border card-hover"
-            >
-              <div
-                className="text-4xl transition-transform duration-300"
-                style={{ color: skill.color }}
-              >
-                <skill.icon />
-              </div>
-              <p className="text-sm font-semibold text-slate-200">{skill.name}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  SERVICES                                                           */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   SERVICES
+   ========================================================================= */
 
 function Services() {
   return (
-    <section id="services" className="relative py-28">
-      <GradientBlobs />
-      <div className="relative max-w-7xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="Services"
-          title="What I can do for you"
-          subtitle="From first pixel to production deploy — end-to-end frontend craftsmanship."
-        />
+    <section id="services" className="relative py-32 bg-section">
+      <div className="container mx-auto max-w-6xl px-6">
+        <Reveal className="max-w-xl mb-16">
+          <Eyebrow>Services</Eyebrow>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-4">How I can help.</h2>
+          <p className="text-ink/60 text-[15.5px]">
+            Focused frontend services for teams and founders who care about quality.
+          </p>
+        </Reveal>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map((service, i) => (
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={staggerParent}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {SERVICES.map((s, i) => (
             <motion.div
-              key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              whileHover={{ y: -8 }}
-              className="group glass-panel rounded-3xl p-8 glow-border card-hover"
+              key={s.title}
+              variants={fadeUp}
+              className="group rounded-[28px] bg-gradient-to-b from-card to-[#121212] border border-line p-8 transition-all duration-300 hover:-translate-y-2 hover:border-secondary/40 hover:shadow-glowSoft"
             >
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-white text-2xl mb-6 shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
-                <service.icon />
+              <span className="text-xs text-ink/30 tracking-widest">{String(i + 1).padStart(2, "0")}</span>
+              <div className="w-[52px] h-[52px] rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center text-xl my-5 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+                {s.icon}
               </div>
-              <h3 className="font-display text-xl font-bold text-white mb-3">{service.title}</h3>
-              <p className="text-slate-400 leading-relaxed text-sm">{service.desc}</p>
+              <h3 className="font-display font-semibold text-lg mb-2">{s.title}</h3>
+              <p className="text-ink/55 text-[14.5px] leading-relaxed">{s.desc}</p>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  PROJECTS                                                           */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   PROJECTS  ← rasmlar shu yerda chiqadi
+   ========================================================================= */
 
 function Projects() {
   return (
-    <section id="projects" className="relative py-28">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="Projects"
-          title="Selected work"
-          subtitle="A mix of personal builds and client-style projects showcasing my frontend range."
-        />
+    <section id="projects" className="relative py-32">
+      <div className="container mx-auto max-w-6xl px-6">
+        <Reveal className="max-w-xl mb-16">
+          <Eyebrow>Selected Work</Eyebrow>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-4">Recent projects.</h2>
+          <p className="text-ink/60 text-[15.5px]">
+            A collection of projects that reflect my frontend craft and attention to detail.
+          </p>
+        </Reveal>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PROJECTS.map((project, i) => (
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={staggerParent}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {PROJECTS.map((p) => (
             <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.55, delay: (i % 3) * 0.1 }}
-              whileHover={{ y: -10 }}
-              className="group glass-panel rounded-3xl overflow-hidden glow-border card-hover flex flex-col"
+              key={p.title}
+              variants={fadeUp}
+              className="group rounded-[28px] bg-card border border-line overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:border-primary/40 hover:shadow-glowSoft"
             >
-              <div
-                className={`relative h-44 bg-gradient-to-br ${project.gradient} flex items-center justify-center overflow-hidden`}
-              >
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-300" />
-                <span className="font-display text-4xl font-bold text-white/90 tracking-tight">
-                  {project.title.split(" ")[0]}
-                </span>
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 bg-black/40 backdrop-blur-sm">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-11 h-11 rounded-full bg-white/15 border border-white/30 flex items-center justify-center text-white hover:bg-white/25 transition-colors"
-                    aria-label="GitHub repository"
-                  >
-                    <FaGithub />
-                  </a>
-                  <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-11 h-11 rounded-full bg-white/15 border border-white/30 flex items-center justify-center text-white hover:bg-white/25 transition-colors"
-                    aria-label="Live demo"
-                  >
-                    <FaExternalLinkAlt className="text-sm" />
-                  </a>
+              {/* RASM — endi ishlaydi */}
+              <div className="relative aspect-[16/11] overflow-hidden bg-[#171717]">
+                {p.img ? (
+                  <img
+                    src={p.img}
+                    alt={p.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="font-display text-sm tracking-widest uppercase text-ink/30">
+                      {p.tag}
+                    </span>
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-bg/50 opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-end p-5">
+                  <span className="text-xs text-ink/80">{p.tech.join(" · ")}</span>
                 </div>
               </div>
 
-              <div className="p-6 flex flex-col flex-1">
-                <h3 className="font-display text-lg font-bold text-white mb-2">{project.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed mb-4 flex-1">{project.desc}</p>
-
-                <div className="flex flex-wrap gap-2 mb-5">
-                  {project.stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300"
-                    >
-                      {tech}
+              <div className="p-6">
+                <span className="text-[11px] font-semibold tracking-wider uppercase text-secondary mb-2 inline-block">
+                  {p.tag}
+                </span>
+                <h3 className="font-display font-semibold text-lg mb-2">{p.title}</h3>
+                <p className="text-ink/55 text-[14px] leading-relaxed mb-4">{p.desc}</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {p.tech.map((t) => (
+                    <span key={t} className="text-[11px] px-3 py-1 rounded-full border border-line text-ink/50">
+                      {t}
                     </span>
                   ))}
                 </div>
-
                 <div className="flex gap-3">
                   <a
-                    href={project.github}
+                    href="https://github.com/uralboyevabdumali"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold border border-white/10 text-slate-200 hover:bg-white/5 transition-colors"
+                    className="flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-full border border-line transition-all duration-300 hover:border-primary hover:bg-primary/10"
                   >
-                    <FaGithub /> Code
+                    <FaGithub size={13} /> Code
                   </a>
                   <a
-                    href={project.demo}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 btn-glow inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white"
+                    href="#"
+                    className="flex-1 inline-flex items-center justify-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-full border border-line transition-all duration-300 hover:border-secondary hover:bg-secondary/10"
                   >
-                    <FaExternalLinkAlt className="text-[10px]" /> Live Demo
+                    <FaExternalLinkAlt size={12} /> Live
                   </a>
                 </div>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  EXPERIENCE                                                         */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   EXPERIENCE
+   ========================================================================= */
 
 function Experience() {
   return (
-    <section id="experience" className="relative py-28">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="Experience"
-          title="My journey so far"
-          subtitle="A timeline of where I've worked, learned and grown as a developer."
-        />
+    <section id="experience" className="relative py-32 bg-section">
+      <div className="container mx-auto max-w-4xl px-6">
+        <Reveal className="max-w-xl mb-16">
+          <Eyebrow>Experience</Eyebrow>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-4">My journey so far.</h2>
+          <p className="text-ink/60 text-[15.5px]">A short, honest timeline of how I got here.</p>
+        </Reveal>
 
-        <div className="relative pl-8 sm:pl-10">
-          <div className="absolute left-[7px] sm:left-[9px] top-2 bottom-2 w-px bg-gradient-to-b from-indigo-500 via-cyan-400 to-transparent" />
+        <div className="relative pl-10 sm:pl-14">
+          <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-primary via-secondary/50 to-transparent" />
 
-          {EXPERIENCE.map((item, i) => (
-            <motion.div
-              key={item.role}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.55, delay: i * 0.12 }}
-              className="relative mb-10 last:mb-0"
-            >
-              <span className="absolute -left-8 sm:-left-10 top-1.5 w-4 h-4 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 ring-4 ring-[#05060A] shadow-[0_0_16px_rgba(56,189,248,0.6)]" />
-
-              <div className="glass-panel rounded-2xl p-6 sm:p-7 glow-border card-hover">
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                  <h3 className="font-display text-lg font-bold text-white">{item.role}</h3>
-                  <span className="text-xs font-semibold text-cyan-300 bg-cyan-400/10 border border-cyan-400/20 rounded-full px-3 py-1">
-                    {item.period}
-                  </span>
-                </div>
-                <p className="text-sm font-medium text-slate-400 mb-3">{item.company}</p>
-                <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+          {EXPERIENCE.map((e, i) => (
+            <Reveal key={e.role} className="relative mb-12 last:mb-0" transition={{ delay: i * 0.1 }}>
+              <span className="absolute -left-10 sm:-left-14 top-1.5 w-4 h-4 rounded-full bg-bg border-2 border-primary shadow-[0_0_12px_rgba(191,187,90,0.5)]" />
+              <div className="rounded-2xl bg-card border border-line p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-glowSoft">
+                <span className="text-xs font-semibold tracking-wider uppercase text-primary">{e.year}</span>
+                <h3 className="font-display font-semibold text-lg mt-2">{e.role}</h3>
+                <p className="text-secondary text-[13px] font-medium mb-2">{e.place}</p>
+                <p className="text-ink/55 text-[14.5px] leading-relaxed">{e.desc}</p>
               </div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -764,351 +763,201 @@ function Experience() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  CONTACT                                                            */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   CONTACT
+   ========================================================================= */
 
 function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+    if (!form.name || !form.email || !form.message) {
       toast.error("Please fill in all fields before sending.");
       return;
     }
-
     setSending(true);
     setTimeout(() => {
       setSending(false);
-      toast.success("Message sent! I'll get back to you soon.");
+      toast.success("Message sent! I'll get back to you soon.", {
+        icon: () => <FaCheckCircle color="#96BB73" />,
+      });
       setForm({ name: "", email: "", message: "" });
-    }, 1200);
+    }, 900);
   };
 
-  const CONTACT_INFO = [
-    { icon: FaEnvelope, label: "Email", value: "uralboyevabdumali@gmail.com", href: "mailto:uralboyevabdumali@gmail.com" },
-    { icon: FaPhoneAlt, label: "Phone", value: "+998 94 527 13 80", href: "tel:+998945271380" },
-    { icon: FaMapMarkerAlt, label: "Location", value: "Tashkent, Uzbekistan", href: null },
-    { icon: FaTelegramPlane, label: "Telegram", value: "@Abdumalik_Uralboyev", href: "https://t.me/Abdumalik_Uralboyev" },
-  ];
-
   return (
-    <section id="contact" className="relative py-28">
-      <GradientBlobs />
-      <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
-        <SectionHeading
-          eyebrow="Contact"
-          title="Let's build something great"
-          subtitle="Have a project in mind or just want to say hi? My inbox is always open."
-        />
+    <section id="contact" className="relative py-32">
+      <div className="container mx-auto max-w-6xl px-6">
+        <Reveal className="max-w-xl mb-16">
+          <Eyebrow>Contact</Eyebrow>
+          <h2 className="font-display font-semibold text-3xl sm:text-4xl mb-4">Let's build something great.</h2>
+          <p className="text-ink/60 text-[15.5px]">
+            Have a project in mind or just want to say hi? My inbox is always open.
+          </p>
+        </Reveal>
 
-        <div className="grid lg:grid-cols-5 gap-8">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-2 flex flex-col gap-5"
-          >
-            {CONTACT_INFO.map((info) => (
-              <div
-                key={info.label}
-                className="glass-panel rounded-2xl p-5 flex items-center gap-4 glow-border"
-              >
-                <div className="w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-indigo-500/20 to-cyan-400/20 flex items-center justify-center text-cyan-300 text-lg">
-                  <info.icon />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">{info.label}</p>
-                  {info.href ? (
-                    <a
-                      href={info.href}
-                      target={info.href.startsWith("http") ? "_blank" : undefined}
-                      rel="noreferrer"
-                      className="text-sm font-semibold text-slate-200 hover:text-cyan-300 transition-colors break-all"
-                    >
-                      {info.value}
-                    </a>
-                  ) : (
-                    <p className="text-sm font-semibold text-slate-200">{info.value}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.form
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
-            onSubmit={handleSubmit}
-            className="lg:col-span-3 glass-panel rounded-3xl p-7 sm:p-9 glow-border"
-          >
-            <div className="grid sm:grid-cols-2 gap-5 mb-5">
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="you@example.com"
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all"
-                />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-xs font-medium text-slate-400 mb-2">Message</label>
-              <textarea
-                name="message"
-                value={form.message}
-                onChange={handleChange}
-                rows={5}
-                placeholder="Tell me about your project..."
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all resize-none"
-              />
-            </div>
-
-            <motion.button
-              type="submit"
-              disabled={sending}
-              whileTap={{ scale: 0.97 }}
-              className="btn-glow w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-white disabled:opacity-70"
-            >
-              {sending ? "Sending..." : "Send Message"}
-              {!sending && <FaPaperPlane className="text-xs" />}
-            </motion.button>
-          </motion.form>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  FOOTER                                                             */
-/* ------------------------------------------------------------------ */
-
-function Footer() {
-  return (
-    <footer className="relative border-t border-white/10 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="grid sm:grid-cols-3 gap-10 mb-12">
-          <div>
-            <a href="#home" className="font-display text-2xl font-bold text-white">
-              AU<span className="text-gradient">.dev</span>
-            </a>
-            <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-xs">
-              Frontend Developer crafting modern web experiences and cyber-inspired UI design
-              from Tashkent, Uzbekistan.
+        <Reveal
+          variants={{ hidden: { opacity: 0, scale: 0.96 }, show: { opacity: 1, scale: 1, transition: { duration: 0.7 } } }}
+          className="grid md:grid-cols-[0.8fr_1.2fr] rounded-[32px] overflow-hidden border border-line bg-gradient-to-br from-card to-[#101010]"
+        >
+          <div className="p-10 sm:p-12 border-b md:border-b-0 md:border-r border-line">
+            <h3 className="font-display font-semibold text-2xl mb-3">Get in touch.</h3>
+            <p className="text-ink/55 text-[14.5px] mb-8 max-w-xs">
+              Reach out directly, or send a message using the form and I'll respond within a day.
             </p>
-            <div className="flex items-center gap-4 mt-6">
-              {SOCIALS.map((s) => (
+
+            {CONTACT_INFO.map((c) => (
+              <a
+                key={c.label}
+                href={c.href || undefined}
+                className={`flex items-center gap-4 py-4 border-t border-line ${
+                  c.href ? "hover:text-primary transition-colors duration-300" : "cursor-default"
+                }`}
+              >
+                <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                  {c.icon}
+                </span>
+                <span>
+                  <span className="block text-[11px] uppercase tracking-wider text-ink/40">{c.label}</span>
+                  <span className="text-[14px] font-medium">{c.value}</span>
+                </span>
+              </a>
+            ))}
+            <div className="border-t border-line pt-6 mt-2 flex gap-3">
+              {SOCIAL_LINKS.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.label}
-                  className="w-10 h-10 flex items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:border-cyan-400/40 hover:bg-cyan-400/10 transition-all"
+                  className="w-11 h-11 rounded-full border border-line flex items-center justify-center transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:-translate-y-1"
                 >
-                  <s.icon />
+                  {s.icon}
                 </a>
               ))}
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-5">Quick Links</h4>
-            <ul className="space-y-3">
-              {NAV_LINKS.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-slate-400 hover:text-cyan-300 transition-colors"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <form onSubmit={handleSubmit} className="p-10 sm:p-12">
+            <div className="grid sm:grid-cols-2 gap-5 mb-5">
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Your name"
+                className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-line text-ink placeholder:text-ink/30 text-sm outline-none transition-all duration-300 focus:border-primary focus:bg-primary/5"
+              />
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Your email"
+                className="w-full px-5 py-4 rounded-2xl bg-white/[0.03] border border-line text-ink placeholder:text-ink/30 text-sm outline-none transition-all duration-300 focus:border-primary focus:bg-primary/5"
+              />
+            </div>
+            <textarea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
+              placeholder="Tell me about your project..."
+              rows={6}
+              className="w-full mb-6 px-5 py-4 rounded-2xl bg-white/[0.03] border border-line text-ink placeholder:text-ink/30 text-sm outline-none resize-none transition-all duration-300 focus:border-primary focus:bg-primary/5"
+            />
+            <button
+              type="submit"
+              disabled={sending}
+              className="w-full inline-flex items-center justify-center gap-2 bg-primary text-bg font-semibold text-sm px-7 py-4 rounded-full transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-glow disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:scale-100"
+            >
+              {sending ? "Sending..." : "Send Message"} <FaPaperPlane size={13} />
+            </button>
+          </form>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
 
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-5">Get In Touch</h4>
-            <ul className="space-y-3 text-sm text-slate-400">
-              <li className="flex items-center gap-2">
-                <FaEnvelope className="text-cyan-400" /> uralboyevabdumali@gmail.com
-              </li>
-              <li className="flex items-center gap-2">
-                <FaPhoneAlt className="text-cyan-400" /> +998 94 527 13 80
-              </li>
-              <li className="flex items-center gap-2">
-                <FaMapMarkerAlt className="text-cyan-400" /> Tashkent, Uzbekistan
-              </li>
-            </ul>
-          </div>
+/* =========================================================================
+   FOOTER
+   ========================================================================= */
+
+function Footer() {
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
+  return (
+    <footer className="relative border-t border-line py-16 bg-section">
+      <div className="container mx-auto max-w-6xl px-6 text-center">
+        <button onClick={() => scrollTo("home")} className="font-display text-2xl font-semibold mb-6 inline-block">
+          Abdumalik<span className="text-primary">.</span>
+        </button>
+
+        <div className="flex justify-center gap-3 mb-8">
+          {SOCIAL_LINKS.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={s.label}
+              className="w-11 h-11 rounded-full border border-line flex items-center justify-center transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:-translate-y-1"
+            >
+              {s.icon}
+            </a>
+          ))}
         </div>
 
-        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-500">
-            © {new Date().getFullYear()} Abdumalik Uralboyev. All rights reserved.
-          </p>
-          <p className="text-xs text-slate-500">Designed &amp; built with React and Tailwind CSS.</p>
+        <div className="flex flex-wrap justify-center gap-8 mb-8">
+          {NAV_LINKS.map((l) => (
+            <button
+              key={l.id}
+              onClick={() => scrollTo(l.id)}
+              className="text-sm text-ink/55 hover:text-primary transition-colors duration-300"
+            >
+              {l.label}
+            </button>
+          ))}
         </div>
+
+        <p className="text-xs text-ink/35">© {new Date().getFullYear()} Abdumalik Uralboyev. All rights reserved.</p>
       </div>
     </footer>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  PORTFOLIO PAGE                                                     */
-/* ------------------------------------------------------------------ */
+/* =========================================================================
+   BACK TO TOP
+   ========================================================================= */
 
-function PortfolioPage() {
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-[#05060A] text-white overflow-x-hidden selection:bg-cyan-400/30">
-      <GlobalStyles />
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Services />
-        <Projects />
-        <Experience />
-        <Contact />
-      </main>
-      <Footer />
-      <ToastContainer
-        position="bottom-right"
-        theme="dark"
-        toastClassName="!bg-[#0B0E17] !border !border-white/10 !rounded-xl"
-      />
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  GLOBAL STYLES (fonts, blobs, glass, glow)                          */
-/* ------------------------------------------------------------------ */
-
-function GlobalStyles() {
-  return (
-    <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
-
-      * { font-family: 'Inter', sans-serif; }
-      .font-display { font-family: 'Space Grotesk', sans-serif; }
-
-      body {
-        background-color: #05060A;
-      }
-
-      .text-gradient {
-        background: linear-gradient(90deg, #818CF8, #22D3EE);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.045);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .glow-border {
-        position: relative;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      }
-      .glow-border:hover {
-        border-color: rgba(56, 189, 248, 0.35);
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.1), 0 20px 45px -20px rgba(99, 102, 241, 0.45);
-      }
-
-      .card-hover {
-        transition: transform 0.35s ease, box-shadow 0.35s ease;
-      }
-
-      .btn-glow {
-        background: linear-gradient(90deg, #6366F1, #22D3EE);
-        box-shadow: 0 8px 24px -8px rgba(99, 102, 241, 0.6);
-        transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
-      }
-      .btn-glow:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px -8px rgba(34, 211, 238, 0.55);
-        filter: brightness(1.08);
-      }
-
-      @keyframes blobFloat1 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        33% { transform: translate(40px, 30px) scale(1.1); }
-        66% { transform: translate(-20px, 50px) scale(0.95); }
-      }
-      @keyframes blobFloat2 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-50px, 40px) scale(1.12); }
-      }
-      @keyframes blobFloat3 {
-        0%, 100% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(30px, -40px) scale(1.08); }
-      }
-
-      .blob-anim { animation: blobFloat1 14s ease-in-out infinite; }
-      .blob-anim-delay { animation: blobFloat2 18s ease-in-out infinite; }
-      .blob-anim-slow { animation: blobFloat3 20s ease-in-out infinite; }
-
-      ::-webkit-scrollbar { width: 10px; }
-      ::-webkit-scrollbar-track { background: #05060A; }
-      ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #6366F1, #22D3EE);
-        border-radius: 10px;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .blob-anim, .blob-anim-delay, .blob-anim-slow { animation: none; }
-        * { scroll-behavior: auto !important; }
-      }
-
-      html { scroll-behavior: smooth; }
-    `}</style>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  APP ROOT                                                           */
-/* ------------------------------------------------------------------ */
-
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<PortfolioPage />} />
-        <Route path="*" element={<PortfolioPage />} />
-      </Routes>
-    </BrowserRouter>
+    <AnimatePresence>
+      {visible && (
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-8 right-8 z-[200] w-12 h-12 rounded-full bg-primary text-bg flex items-center justify-center shadow-glow transition-transform duration-300 hover:scale-110"
+          aria-label="Back to top"
+        >
+          <FaArrowUp />
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 }
