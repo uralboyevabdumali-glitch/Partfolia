@@ -301,7 +301,7 @@ function Navbar() {
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 0.8, 0.24, 1] }}
-        className={`fixed left-1/2 -translate-x-1/2 z-[200] w-[min(94%,900px)] flex items-center justify-between gap-4 rounded-full glass px-4 py-3 transition-all duration-500 ${
+        className={`fixed  left 1/2 -translate-x-1/2 z-[200] w-[min(94%,900px)] flex items-center justify-between gap-4 rounded-full glass px-4 py-3 transition-all duration-500 ${
           scrolled ? "top-3 shadow-glowSoft" : "top-5"
         }`}
       >
